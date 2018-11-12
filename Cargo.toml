@@ -1,6 +1,6 @@
 [package]
 name = "smoke"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["hunterkepley <kepley.l.hunter@gmail.com>"]
 
 [dependencies]

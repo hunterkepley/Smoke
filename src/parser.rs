@@ -1,5 +1,6 @@
 use lexer;
 use smoke_commands;
+use std::process;
 
 #[derive(PartialEq, Clone)]
 pub enum DataType { // Data types in Smoke!
@@ -24,15 +25,21 @@ pub struct ConstructorPart { // Contains finalized constructor value as string,
 
 fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart> {
     let start_index = index as usize;
-    let final_constructor: Vec<ConstructorPart> = vec![];
+    let mut final_constructor: Vec<ConstructorPart> = vec![];
+    let mut empty_constructor = false;
     if tokens[start_index].identity == lexer::Identity::OParantheses {
         let mut chars_collected: Vec<char> = vec![];
         for i in start_index..tokens.len() {
-            if tokens[i].identity == lexer::Identity::CParantheses {
-            } else {
-                if tokens[i].identity != lexer::Identity::OParantheses {
-                    chars_collected.push(tokens[i].ch);
+            if tokens[i].identity != lexer::Identity::OParantheses {
+                if tokens[i].identity == lexer::Identity::CParantheses {
+                    if chars_collected.len() == 0 {
+                        // There's nothing in the constructor
+                        empty_constructor = true;
+                    }
+                    break; // Escape when command is closed
+                    // TODO: Allow parantheses for functions and math operations and such, make a counter or something
                 }
+                chars_collected.push(tokens[i].ch);
             }
         }
         // Decide data type and add to constructor vec
@@ -40,13 +47,15 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
             d_type: DataType::VString,
             string: "".to_string(),
         };
-        if chars_collected[0] == '"' || chars_collected[0] == '\"' {
-            // It's a string
-            let chars_collected_length = chars_collected.len();
-            chars_collected.remove(0);chars_collected.remove(chars_collected_length-1);
-            constructor_part.string = chars_collected.into_iter().collect();
+        if !empty_constructor {
+            if chars_collected[0] == '"' || chars_collected[0] == '\"' {
+                // It's a string
+                let chars_collected_length = chars_collected.len();
+                chars_collected.remove(0);chars_collected.remove(chars_collected_length-2); // remove quotes
+                constructor_part.string = chars_collected.into_iter().collect();
+            }
         }
-        println!("{}", constructor_part.string);
+        final_constructor.push(constructor_part);
     }
     return final_constructor;
 }
@@ -86,8 +95,9 @@ pub fn parse(t: &[lexer::Token]) { // Parses, file and token given
     let mut temp_check: Vec<char> = vec![];
     // List of every command saved in the program including smoke stl commands
     //let commands: Vec<CommandToken> = vec![];
-
+    let mut iterator = 0;
     for i in t {
+        iterator+=1;
         if i.identity == lexer::Identity::Unknown {
             if i.ch.is_alphanumeric() { // TODO: Make sure that command[0] isn't numeric!
                 temp_check.push(i.ch);
@@ -100,6 +110,11 @@ pub fn parse(t: &[lexer::Token]) { // Parses, file and token given
             if c.command == "unknown" {
                 // TODO: Check for user-made command, else error this out
             } else {
+                if t[iterator-1].identity != lexer::Identity::OParantheses {
+                    println!("Error, command {} without ( )", c.command); // TODO: MAKE THIS CHECK FOR A CLOSING PARANTHESES.
+                    // Make better, idiomatic errors later, including line number
+                    process::exit(0);
+                }
                 run_smoke_command(c.clone());
             }
             temp_check = vec![]; // Empty the temp command check vec
