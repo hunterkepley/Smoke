@@ -11,16 +11,16 @@ pub enum DataType { // Data types in Smoke!
 }
 
 #[derive(Clone)]
-struct CommandToken<D> { // Command combined with lexer token, assigns the two
+struct CommandToken { // Command combined with lexer token, assigns the two
     token: lexer::Token,
     command: String,
-    constructor: Vec<ConstructorPart<D>>
+    constructor: Vec<ConstructorPart>
 }
 
 #[derive(Clone)]
-pub struct ConstructorPart<D> { // Contains finalized constructor value as string,
+pub struct ConstructorPart { // Contains finalized constructor value as string,
     pub d_type: DataType, // It's actual data type
-    pub string: D,
+    pub string: String,
 }
 
 fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart> {
