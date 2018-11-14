@@ -14,7 +14,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 { // Makes sure {} in ./smoke {FILE.smo}
-        print_help();
+        print_help(); // TODO: check if it's a .smo file!
     } else {
         let l = &args[1];
         let mut file = File::open(l).expect("Smoke file not found");
