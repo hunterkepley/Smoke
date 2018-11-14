@@ -42,32 +42,27 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
                 chars_collected.push(tokens[i].ch);
             }
         }
-        // Split based on commas
-        let chars_collected_string: String = chars_collected.clone().into_iter().collect();
-        let split_chars_collected = chars_collected_string.split(',');
         // Decide data type and add to constructor vec
         let mut constructor_part = ConstructorPart { // Assume it's a string for setting this up
             d_type: DataType::VString,
             string: "".to_string(),
         };
         if !empty_constructor {
-            for i in split_chars_collected.into_iter() {
-                if i == '"' || chars_collected[0] == '\"' { // I doubt the '\"' is needed, but until I do testing it's here to stay
-                    // It's a string
-                    let chars_collected_length = chars_collected.len();
-                    chars_collected.remove(0);chars_collected.remove(chars_collected_length-2); // remove quotes
+            if chars_collected[0] == '"' || chars_collected[0] == '\"' { // I doubt the '\"' is needed, but until I do testing it's here to stay
+                // It's a string
+                let chars_collected_length = chars_collected.len();
+                chars_collected.remove(0);chars_collected.remove(chars_collected_length-2); // remove quotes
+                constructor_part.string = chars_collected.into_iter().collect();
+            } else if chars_collected[0].is_numeric() {
+                // It's a int/float
+                if chars_collected.contains(&'.') {
+                    // Float!
+                    constructor_part.d_type = DataType::VFloat;
                     constructor_part.string = chars_collected.into_iter().collect();
-                } else if chars_collected[0].is_numeric() {
-                    // It's a int/float
-                    if chars_collected.contains(&'.') {
-                        // Float!
-                        constructor_part.d_type = DataType::VFloat;
-                        constructor_part.string = chars_collected.into_iter().collect();
-                    } else {
-                        // Int!
-                        constructor_part.d_type = DataType::VInt;
-                        constructor_part.string = chars_collected.into_iter().collect();
-                    }
+                } else {
+                    // Int!
+                    constructor_part.d_type = DataType::VInt;
+                    constructor_part.string = chars_collected.into_iter().collect();
                 }
             }
         }
