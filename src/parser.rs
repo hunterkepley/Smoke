@@ -27,7 +27,7 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
     let start_index = index as usize;
     let mut final_constructor: Vec<ConstructorPart> = vec![];
     let mut empty_constructor = false;
-    if tokens[start_index].identity == lexer::Identity::OParantheses {
+    /*if tokens[start_index].identity == lexer::Identity::OParantheses {
         let mut chars_collected: Vec<char> = vec![];
         for i in start_index..tokens.len() {
             if tokens[i].identity != lexer::Identity::OParantheses {
@@ -39,7 +39,7 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
                     break; // Escape when command is closed
                     // TODO: Allow parantheses for functions and math operations and such, make a counter or something
                 }
-                chars_collected.push(tokens[i].ch);
+                //chars_collected.push(tokens[i].ch);
             }
         }
         // Decide data type and add to constructor vec
@@ -67,7 +67,7 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
             }
         }
         final_constructor.push(constructor_part);
-    }
+    }*/
     return final_constructor;
 }
 
@@ -110,11 +110,11 @@ pub fn parse(t: &[lexer::Token]) { // Parses, file and token given
     for i in t {
         iterator+=1;
         if i.identity == lexer::Identity::Unknown {
-            if i.ch.is_alphanumeric() { // TODO: Make sure that command[0] isn't numeric!
-                temp_check.push(i.ch);
-            } else {
+            //if i.ch.is_alphanumeric() { // TODO: Make sure that command[0] isn't numeric!
+             //   temp_check.push(i.ch);
+            //} else {
                 // TODO: Error this out -- not A-z/1-0
-            }
+            //}
         } else {
             let temp_s = temp_check.into_iter().collect(); // String of the maybe command
             let c = decide_smoke_command(temp_s, i, t);
