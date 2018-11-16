@@ -51,17 +51,22 @@ fn decide_identity(ch: String) -> Identity {
 pub fn lex(f: String) -> Vec<Token> {
     let mut tokens: Vec<Token> = vec![];
 
-    let mut commands: Vec<String> = vec!["print".to_string(), "stop".to_string()];
+    let commands: Vec<String> = vec!["print".to_string(), "stop".to_string()];
 
     let mut built_word: Vec<char> = vec![]; // All unknowns to make a literal or word or command
     let mut i = 0;
-    for character in f.chars() {
+    let mut g = f.clone();
+    if f.chars().nth(f.len()-1).unwrap() != ' ' {
+        g.push_str(" ");
+        // This prevents the last character not being counted if it's a literal/name/command
+    }
+    for character in g.chars() {
         let _identity = decide_identity(character.clone().to_string());
 
         if _identity == self::Identity::Unknown {
             built_word.push(character);
-            let st: String = built_word.clone().into_iter().collect();
         } else {
+            // add the word
             if built_word.len() > 0 {
                 let st: String = built_word.clone().into_iter().collect();
                 let mut finished = false;
@@ -97,6 +102,14 @@ pub fn lex(f: String) -> Vec<Token> {
                         built_word.clear();
                     }
                     i-=built_word.len()+1;
+                }
+                // Add current character to the tokens list unless it's a space
+                if _identity != self::Identity::Space {
+                    tokens.push(Token { // Creates the current 'Token' [full lexed struct of character]
+                        identity: _identity.clone(),
+                        ch: character.to_string(), 
+                        index: i as u32
+                    });
                 }
             } else { // Nothing in the unknown built word, so it's a single character token
                 if _identity != self::Identity::Space {
