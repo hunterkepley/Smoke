@@ -5,7 +5,7 @@ use std::io::prelude::*;
 mod parser;
 mod lexer;
 mod smoke_commands;
-
+// What you were workin on: Getting the ID's to be sequential, then parsing the constructors
 fn print_help() {
     println!("Use: Smoke FILE.smo");
 }

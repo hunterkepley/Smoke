@@ -27,6 +27,7 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
     let start_index = index as usize;
     let mut final_constructor: Vec<ConstructorPart> = vec![];
     let mut empty_constructor = false;
+    println!("{}", tokens[index as usize].ch);
     /*if tokens[start_index].identity == lexer::Identity::OParantheses {
         let mut chars_collected: Vec<char> = vec![];
         for i in start_index..tokens.len() {
@@ -103,32 +104,21 @@ fn run_smoke_command(tok: CommandToken) -> bool { // Smoke STL commands are ran 
 }
 
 pub fn parse(t: &[lexer::Token]) { // Parses, file and token given
-    let mut temp_check: Vec<char> = vec![];
-    // List of every command saved in the program including smoke stl commands
-    //let commands: Vec<CommandToken> = vec![];
     let mut iterator = 0;
     for i in t {
         iterator+=1;
-        if i.identity == lexer::Identity::Unknown {
-            //if i.ch.is_alphanumeric() { // TODO: Make sure that command[0] isn't numeric!
-             //   temp_check.push(i.ch);
-            //} else {
-                // TODO: Error this out -- not A-z/1-0
-            //}
-        } else {
-            let temp_s = temp_check.into_iter().collect(); // String of the maybe command
-            let c = decide_smoke_command(temp_s, i, t);
+        if i.identity == lexer::Identity::Command || i.identity == lexer::Identity::Name {
+            let c = decide_smoke_command(i.clone().ch, i, t);
             if c.command == "unknown" {
                 // TODO: Check for user-made command, else error this out
             } else {
-                if t[iterator-1].identity != lexer::Identity::OParantheses {
+                if t[iterator].identity != lexer::Identity::OParantheses {
                     println!("Error, command {} without ( )", c.command); // TODO: MAKE THIS CHECK FOR A CLOSING PARANTHESES.
                     // Make better, idiomatic errors later, including line number
                     process::exit(0);
                 }
                 run_smoke_command(c.clone());
             }
-            temp_check = vec![]; // Empty the temp command check vec
         }
     }
 }
