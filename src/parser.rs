@@ -27,48 +27,16 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
     let start_index = index as usize;
     let mut final_constructor: Vec<ConstructorPart> = vec![];
     let mut empty_constructor = false;
-    println!("{}", tokens[index as usize].ch);
-    /*if tokens[start_index].identity == lexer::Identity::OParantheses {
-        let mut chars_collected: Vec<char> = vec![];
-        for i in start_index..tokens.len() {
-            if tokens[i].identity != lexer::Identity::OParantheses {
-                if tokens[i].identity == lexer::Identity::CParantheses {
-                    if chars_collected.len() == 0 {
-                        // There's nothing in the constructor
-                        empty_constructor = true;
-                    }
-                    break; // Escape when command is closed
-                    // TODO: Allow parantheses for functions and math operations and such, make a counter or something
-                }
-                //chars_collected.push(tokens[i].ch);
+    if tokens[start_index+1 as usize].identity == lexer::Identity::OParantheses {
+        for i in (start_index+2 as usize)..(tokens.len() as usize) {
+            if tokens[i as usize].identity == lexer::Identity::CParantheses { // End of constructor, break down
+                break;
+            }
+            if tokens[i as usize].identity != lexer::Identity::Comma {
+                // Decide what type it is, then make the constructor part
             }
         }
-        // Decide data type and add to constructor vec
-        let mut constructor_part = ConstructorPart { // Assume it's a string for setting this up
-            d_type: DataType::VString,
-            string: "".to_string(),
-        };
-        if !empty_constructor {
-            if chars_collected[0] == '"' || chars_collected[0] == '\"' { // I doubt the '\"' is needed, but until I do testing it's here to stay
-                // It's a string
-                let chars_collected_length = chars_collected.len();
-                chars_collected.remove(0);chars_collected.remove(chars_collected_length-2); // remove quotes
-                constructor_part.string = chars_collected.into_iter().collect();
-            } else if chars_collected[0].is_numeric() {
-                // It's a int/float
-                if chars_collected.contains(&'.') {
-                    // Float!
-                    constructor_part.d_type = DataType::VFloat;
-                    constructor_part.string = chars_collected.into_iter().collect();
-                } else {
-                    // Int!
-                    constructor_part.d_type = DataType::VInt;
-                    constructor_part.string = chars_collected.into_iter().collect();
-                }
-            }
-        }
-        final_constructor.push(constructor_part);
-    }*/
+    }
     return final_constructor;
 }
 

@@ -80,7 +80,6 @@ pub fn lex(f: String) -> Vec<Token> {
                         });
                         built_word.clear();
                         finished = true;
-                        println!("{} - {:?}", st, i);
                         i+=1;
                         break;
                     }
@@ -92,7 +91,6 @@ pub fn lex(f: String) -> Vec<Token> {
                             ch: st.clone(),
                             index: i as u32
                         });
-                        println!("{} - {:?}", st, i);
                         i+=1;
                         built_word.clear();
                     } else { // Name
@@ -101,7 +99,6 @@ pub fn lex(f: String) -> Vec<Token> {
                             ch: st.clone(),
                             index: i as u32
                         });
-                        println!("{} - {:?}", st, i);
                         i+=1;
                         built_word.clear();
                     }
@@ -113,7 +110,6 @@ pub fn lex(f: String) -> Vec<Token> {
                         ch: character.to_string(), 
                         index: i as u32
                     });
-                    i+=1;
                 }
             } else { // Nothing in the unknown built word, so it's a single character token
                 if _identity != self::Identity::Space {
@@ -122,14 +118,10 @@ pub fn lex(f: String) -> Vec<Token> {
                         ch: character.to_string(), 
                         index: i as u32
                     });
-                    println!("{} - {:?}", character.to_string(), i);
                     i+=1;
                 }
             }
         }
     }
-    /*for i in tokens.clone() {
-        println!("{} {:?}", i.ch, i.index);
-    }*/
     return tokens;
 }
