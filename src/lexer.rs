@@ -25,7 +25,7 @@ pub enum Identity {
 pub struct Token {
     pub identity: Identity,
     pub ch: String,
-    pub index: u32, // u32 just incase someone goes crazy on a file size
+    pub index: u32,
 }
 
 fn decide_identity(ch: String) -> Identity {
@@ -51,7 +51,7 @@ fn decide_identity(ch: String) -> Identity {
 pub fn lex(f: String) -> Vec<Token> {
     let mut tokens: Vec<Token> = vec![];
 
-    let commands: Vec<String> = vec!["print".to_string(), "stop".to_string()];
+    let commands: Vec<String> = vec!["print".to_string(), "println".to_string(), "stop".to_string()];
 
     let mut built_word: Vec<char> = vec![]; // All unknowns to make a literal or word or command
     let mut i = 0;
@@ -63,7 +63,7 @@ pub fn lex(f: String) -> Vec<Token> {
     for character in g.chars() {
         let _identity = decide_identity(character.clone().to_string());
 
-        if _identity == self::Identity::Unknown {
+        if _identity == self::Identity::Unknown { // Find a way of allowing " " and ' '
             built_word.push(character);
         } else {
             // add the word
@@ -122,6 +122,9 @@ pub fn lex(f: String) -> Vec<Token> {
                 }
             }
         }
+    }
+    for i in tokens.clone() {
+        println!("{}", i.ch);
     }
     return tokens;
 }

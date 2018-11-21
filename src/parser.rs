@@ -33,7 +33,30 @@ fn parse_constructor(index: u32, tokens:&[lexer::Token]) -> Vec<ConstructorPart>
                 break;
             }
             if tokens[i as usize].identity != lexer::Identity::Comma {
-                // Decide what type it is, then make the constructor part
+                let mut data_type: DataType = DataType::VString;
+                let mut token = tokens[i as usize].clone();
+                let mut slice: &str = &token.ch;
+                if token.identity == lexer::Identity::Literal {
+                    if token.ch.chars().nth(0).unwrap() == '"' || (token.ch.chars().nth(0).unwrap() == '\'' && token.ch.len() > 3) { // string
+                        println!("{}", slice);
+                        slice = &slice[1..token.clone().ch.len()-1];
+                        data_type = DataType::VString;
+                    }  else if token.ch.chars().nth(0).unwrap() == '\'' && token.ch.len() == 3 { // char
+                        slice = &slice[1..token.clone().ch.len()-1];
+                        data_type = DataType::VChar;
+                    } else { // int or float
+                        if token.ch.contains(".") {
+                            data_type = DataType::VFloat;
+                        } else {
+                            data_type = DataType::VInt;
+                        }
+                    }
+                }
+                let c_part = ConstructorPart {
+                    d_type: data_type,
+                    string: slice.to_string()
+                };
+                final_constructor.push(c_part);
             }
         }
     }
@@ -46,6 +69,10 @@ fn decide_smoke_command(comm: String, tok: &lexer::Token, tokens:&[lexer::Token]
             token: tok.clone(), 
             command: comm, 
             constructor: parse_constructor(tok.index, tokens)}, // TODO: Actually add constructor
+        "println" => CommandToken{
+            token: tok.clone(),
+            command: comm,
+            constructor: parse_constructor(tok.index, tokens)},
         "stop" => CommandToken{
             token: tok.clone(),
             command: comm,
@@ -61,6 +88,10 @@ fn run_smoke_command(tok: CommandToken) -> bool { // Smoke STL commands are ran 
     match tok.command.as_ref() {
         "print" => {
             smoke_commands::print(tok.constructor);
+            return true;
+        },
+        "println" => {
+            smoke_commands::println(tok.constructor);
             return true;
         },
         "stop" => {
