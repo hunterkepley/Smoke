@@ -63,7 +63,7 @@ pub fn lex(f: String) -> Vec<Token> {
     for character in g.chars() {
         let _identity = decide_identity(character.clone().to_string());
 
-        if _identity == self::Identity::Unknown { // Find a way of allowing " " and ' '
+        if _identity == self::Identity::Unknown || ( built_word.len() > 0 && (built_word[0] == '"' || built_word[0] == '\'')) {
             built_word.push(character);
         } else {
             // add the word
@@ -124,7 +124,7 @@ pub fn lex(f: String) -> Vec<Token> {
         }
     }
     for i in tokens.clone() {
-        println!("{}", i.ch);
+        println!("--{}", i.ch);
     }
     return tokens;
 }
